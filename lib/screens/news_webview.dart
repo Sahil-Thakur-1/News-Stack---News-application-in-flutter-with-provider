@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class NewsWebview extends StatelessWidget {
+class NewsWebView extends StatelessWidget {
   final String url;
-  NewsWebview({super.key,required this.url});
+  const NewsWebView({super.key,required this.url});
 
   @override
   Widget build(BuildContext context) {

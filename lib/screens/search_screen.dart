@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_stack/Api%20fetch/news_api.dart';
 import 'package:news_stack/Modal/controller_latestnews.dart';
-import 'package:news_stack/Modal/controller_top_news.dart';
 import 'package:news_stack/components/latest_news_container.dart';
 
 class SearchScreen extends StatefulWidget {

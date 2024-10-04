@@ -23,7 +23,7 @@ class HotNewsContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return  InkWell(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> NewsWebview(url: url) ));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> NewsWebView(url: url) ));
       },
       child: Container(
         margin: const EdgeInsets.only(right: 10),

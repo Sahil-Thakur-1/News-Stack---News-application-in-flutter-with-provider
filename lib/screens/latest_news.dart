@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:news_stack/Api%20fetch/news_api.dart';
-import 'package:news_stack/Modal/controller_latestnews.dart';
-import 'package:news_stack/Modal/controller_top_news.dart';
 import 'package:news_stack/components/custom_appbar.dart';
 import 'package:news_stack/components/hot_news_container.dart';
 import 'package:news_stack/components/latest_news_container.dart';
+import 'package:news_stack/provider/provider_Latest.dart';
 import 'package:news_stack/screens/search_screen.dart';
+import 'package:provider/provider.dart';
 
 class LatestNews extends StatefulWidget {
   const LatestNews({super.key});
@@ -16,23 +14,12 @@ class LatestNews extends StatefulWidget {
 }
 
 class _LatestNewsState extends State<LatestNews> {
-  bool value = false;
-  late List<ControllerTopNews> topNews;
-
   ScrollController scrollController = ScrollController();
   ScrollController hotNewsController = ScrollController();
-  late List<ControllerLatestNews> news;
-
-
+  bool scrollRoller = false;
 
    getLatestNews()async{
-     news = await NewsApi.fetchLatestNews();
-     topNews = await NewsApi.fetchTopNews();
-     print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-     print(topNews.length);
-     setState(() {
-       value=true;
-     });
+    await Provider.of<LatestPageProvider>(context,listen: false).getNewsData();
   }
 
 
@@ -46,19 +33,13 @@ class _LatestNewsState extends State<LatestNews> {
 
   void reachLast()async{
     if(scrollController.position.pixels==scrollController.position.maxScrollExtent){
-      news = await NewsApi.fetchLatestNews();
-      setState(() {
-
-      });
+      Provider.of<LatestPageProvider>(context,listen: false).getNewsData();
     }
   }
 
   void reachEnd()async{
     if(hotNewsController.position.pixels==hotNewsController.position.maxScrollExtent){
-      topNews = await NewsApi.fetchTopNews();
-      setState(() {
-
-      });
+      Provider.of<LatestPageProvider>(context,listen: false).getReachTop();
     }
   }
 
@@ -66,101 +47,138 @@ class _LatestNewsState extends State<LatestNews> {
 
   @override
   Widget build(BuildContext context) {
-    return value==false ? const Center(child: CircularProgressIndicator(
-      color: Colors.red,
-    ),)
-        : Scaffold(
-      key: _scaffoldKey,
-      appBar: CustomAppbar(onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> const SearchScreen()));
-      },
-      drawer: (){
-        _scaffoldKey.currentState?.openDrawer();
-        print('drawer is pressed');
-      },),
-      drawer: Drawer(
-        width: 220,
-        backgroundColor: Colors.white70,
-        elevation: 10,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.zero),
-        ),
-        child: Container(
-          width: 100,
-        ),
-      ),
-      body: SingleChildScrollView(
-        controller: scrollController,
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Hottest News",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "see all",
-                    style: TextStyle(fontSize: 20, color: Colors.grey),
-                  ),
-                ],
-              ),
+    print('latest news state');
+    return Consumer<LatestPageProvider>(builder: (context,value,child){
+       return value.isLoading ? const Center(child: CircularProgressIndicator(
+        color: Colors.red,
+      ),)
+          : Scaffold(
+        key: _scaffoldKey,
+        appBar: CustomAppbar(onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> const SearchScreen()));
+        },
+          drawer: (){
+            _scaffoldKey.currentState?.openDrawer();
+            print('drawer is pressed');
+          },),
+        drawer: Drawer(
+          width: 220,
+          backgroundColor: Colors.white70,
+          elevation: 10,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.zero),
+          ),
+          child: Center(
+            child: Container(
+              width: 100,
+              child: const Text("In production",style: TextStyle(
+                fontSize: 15
+              ),),
             ),
-             Padding(
-              padding: EdgeInsets.all(10.0),
-              child: SingleChildScrollView(
-                controller: hotNewsController,
-                scrollDirection: Axis.horizontal,
+          ),
+        ),
+        body: SingleChildScrollView(
+          controller: scrollController,
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Row(
-                  children: topNews.map(
-                          (e)=>HotNewsContainer(title: e.title,
-                      trending: e.trending,
-                      date: e.date,
-                      image: e.image,
-                      author: e.author,
-                          url: e.url,)).toList(),
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Hottest News",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "see all",
+                      style: TextStyle(fontSize: 20, color: Colors.grey),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Latest News for you",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  controller: hotNewsController,
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      Row(
+                        children: value.topNews.map(
+                                (e)=>HotNewsContainer(title: e.title,
+                              trending: e.trending,
+                              date: e.date,
+                              image: e.image,
+                              author: e.author,
+                              url: e.url,)).toList(),
+                      ),
+                      const SizedBox(
+                        width:5,
+                      ),
+                      const SizedBox(
+                        child:  CircularProgressIndicator(
+                          color: Colors.red,
+                        ),
+                        height: 15,
+                        width: 15,
+                      )
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children:
-                 news.map(
-                     (e)=>LatestNewsContainer(title: e.title,
-                         date: e.date,
-                         image: e.image,
-                         author: e.author,
-                         sourceIcon: e.sourceIcon, url: e.url,
-                         ),
-                 ).toList(),
-
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Latest News for you",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    Column(
+                      children:
+                      value.latestNews.map(
+                            (e)=>LatestNewsContainer(title: e.title,
+                          date: e.date,
+                          image: e.image,
+                          author: e.author,
+                          sourceIcon: e.sourceIcon, url: e.url,
+                        ),
+                      ).toList(),
+                    ),
+                     const SizedBox(
+                       height: 5,
+                     ),
+                     const SizedBox(
+                      child: CircularProgressIndicator(
+                        color: Colors.red,
+                      ),
+                      height: 15,
+                      width: 15,
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

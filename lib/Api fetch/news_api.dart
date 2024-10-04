@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:news_stack/Modal/controller_latestnews.dart';
 import 'package:news_stack/Modal/controller_news.dart';
 import 'package:news_stack/Modal/controller_top_news.dart';
+import 'package:news_stack/api_key.dart';
 
 
 
@@ -57,10 +58,10 @@ class NewsApi{
   static Future<List<ControllerLatestNews>> fetchLatestNews() async{
     Uri uri;
     if(latestNewsKey==''){
-   uri = Uri.parse("https://newsdata.io/api/1/latest?apikey=pub_53932005bafac81bb00a0110feddda414d89a&language=en&country=in");
+   uri = Uri.parse("https://newsdata.io/api/1/latest?apikey=${latestNewsKey}&language=en&country=in");
    }
    else{
-     uri= Uri.parse('https://newsdata.io/api/1/latest?apikey=pub_53932005bafac81bb00a0110feddda414d89a&language=en&country=in&page=${latestNewsKey}');
+     uri= Uri.parse('https://newsdata.io/api/1/latest?apikey=${latestNewsKey}&language=en&country=in&page=${latestNewsKey}');
    }
    Response response = await http.get(uri);
     Map latest_news = jsonDecode(response.body);
@@ -73,10 +74,10 @@ class NewsApi{
   static Future<List<ControllerTopNews>> fetchTopNews()async{
     Uri uri;
     if(topNewsKey==''){
-      uri = Uri.parse("https://api.thenewsapi.com/v1/news/top?api_token=AHf9zuqU7ADTJpIZtXCWDJEuVspS464etKgjQTtu&limit=3&language=en");
+      uri = Uri.parse("https://api.thenewsapi.com/v1/news/top?api_token=${topNewsApiKey}&limit=3&language=en");
     }
     else{
-      uri= Uri.parse('https://api.thenewsapi.com/v1/news/top?language=en&api_token=AHf9zuqU7ADTJpIZtXCWDJEuVspS464etKgjQTtu&limit=3&page=${topNewsKey}');
+      uri= Uri.parse('https://api.thenewsapi.com/v1/news/top?language=en&api_token=${topNewsApiKey}&limit=3&page=${topNewsKey}');
     }
     Response response = await http.get(uri);
     Map top_news = jsonDecode(response.body);
@@ -89,7 +90,7 @@ class NewsApi{
   }
 
   static Future<List<ControllerLatestNews>> fetchSearchNews(String search)async{
-    Uri  uri = Uri.parse("https://newsdata.io/api/1/latest?apikey=pub_53932005bafac81bb00a0110feddda414d89a&language=en&qInMeta=$search");
+    Uri  uri = Uri.parse("https://newsdata.io/api/1/latest?apikey=${searchNewsApiKey}a&language=en&qInMeta=$search");
     Response response = await http.get(uri);
     Map searchNews = jsonDecode(response.body);
     var article = searchNews['results'];

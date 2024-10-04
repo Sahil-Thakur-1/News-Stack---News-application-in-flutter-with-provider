@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:news_stack/components/bottom_navigation_bar.dart';
+import 'package:news_stack/provider/provider_Latest.dart';
+import 'package:news_stack/provider/provider_news.dart';
+import 'package:provider/provider.dart';
 
 
 void main() {
@@ -11,9 +14,15 @@ class NewsStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (BuildContext context)=>ProviderService()),
+          ChangeNotifierProvider(create: (BuildContext context)=>LatestPageProvider()),
+        ],
+        child: const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: CustomNavigationBar(),
+    )
     );
   }
 }

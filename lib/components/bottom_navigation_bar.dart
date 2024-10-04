@@ -11,7 +11,7 @@ class CustomNavigationBar extends StatefulWidget {
 }
 
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
-  var pageList = [const LatestNews(),const NewsScreen(),NewsWebview(url: "https://news.google.com/topstories?hl=en-IN&gl=IN&ceid=IN:en")];
+  var pageList = [const LatestNews(),const NewsScreen(),NewsWebView(url: "https://news.google.com/topstories?hl=en-IN&gl=IN&ceid=IN:en")];
   var pageNo = 0;
   @override
   Widget build(BuildContext context) {

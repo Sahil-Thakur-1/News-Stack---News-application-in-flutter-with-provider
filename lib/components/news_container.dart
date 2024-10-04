@@ -10,7 +10,7 @@ class NewsContainer extends StatelessWidget {
   final String url;
 
 
-  NewsContainer ({
+  const NewsContainer ({
     required this.content,
     required this.description,
     required this.image,
@@ -25,7 +25,7 @@ class NewsContainer extends StatelessWidget {
       children: [
         FadeInImage.assetNetwork(
             width: MediaQuery.of(context).size.width,
-            height: 400,
+            height: MediaQuery.of(context).size.height/2.2,
             fit: BoxFit.cover,
             fadeOutDuration: const Duration(seconds: 1),
             fadeInDuration: const Duration(seconds: 1),
@@ -52,7 +52,7 @@ class NewsContainer extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
-              Text(description.length > 100 ? "${description.substring(0,100)}..." : description,
+              Text(description.length > 80 ? "${description.substring(0,80)}..." : description,
                 style: TextStyle(
                     fontSize: 14,
                   color: Colors.grey.shade500
@@ -87,7 +87,7 @@ class NewsContainer extends StatelessWidget {
                   ),
                   onPressed: () async{
                     url.replaceAll("http", "https");
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>NewsWebview(url:url)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>NewsWebView(url:url)));
                   }, child: const  Text("Read More",style:TextStyle(
                 color: Colors.white
               ),),),
